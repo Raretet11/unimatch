@@ -1,6 +1,6 @@
 package com.rar.unimatch.model.DTO;
 
-import com.rar.unimatch.Properties.DTOValidationProperties;
+import com.rar.unimatch.properties.DTOValidationProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

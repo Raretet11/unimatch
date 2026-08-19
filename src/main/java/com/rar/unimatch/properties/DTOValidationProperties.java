@@ -1,4 +1,4 @@
-package com.rar.unimatch.Properties;
+package com.rar.unimatch.properties;
 
 public interface DTOValidationProperties {
     int PASSWORD_MIN = 8;
