@@ -30,3 +30,44 @@ token:
 springdoc:
   swagger-ui:
     enabled: ${SWAGGER_ENABLED}
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        limit-refresh-period: 60s
+        timeout-duration: 5s
+        register-health-indicator: true
+
+    instances:
+      authRegistration:
+        base-config: default
+        limit-for-period: 20
+
+      authLogin:
+        base-config: default
+        limit-for-period: 60
+
+  circuitbreaker:
+    instances:
+      database:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 60000
+        ignore-exceptions:
+          - com.rar.unimatch.error.ResourceNotFoundException
+          - org.springframework.security.authentication.BadCredentialsException
+          - com.rar.unimatch.error.BadRequestException
+
+  retry:
+    instances:
+      database:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - java.sql.SQLException
+          - org.springframework.dao.QueryTimeoutException
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
