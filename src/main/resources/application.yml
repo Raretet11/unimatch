@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: unimatch
+
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format-sql: true
+
+token:
+  signing:
+    key: ${JWT_TOKEN_KEY}
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED}
