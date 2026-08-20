@@ -1,4 +1,4 @@
-package com.rar.unimatch.model;
+package com.rar.unimatch.model.user;
 
 import java.sql.Timestamp;
 import java.util.Collection;

@@ -5,11 +5,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.rar.unimatch.model.Role;
-import com.rar.unimatch.model.User;
 import com.rar.unimatch.model.DTO.JwtAuthenticationResponse;
 import com.rar.unimatch.model.DTO.SignInRequest;
 import com.rar.unimatch.model.DTO.SignUpRequest;
+import com.rar.unimatch.model.user.Role;
+import com.rar.unimatch.model.user.User;
 
 import lombok.AllArgsConstructor;
 

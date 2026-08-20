@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.rar.unimatch.error.BadRequestException;
 import com.rar.unimatch.error.ResourceNotFoundException;
-import com.rar.unimatch.model.User;
+import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
