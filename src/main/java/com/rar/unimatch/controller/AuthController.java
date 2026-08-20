@@ -49,7 +49,8 @@ public class AuthController {
     @PostMapping("/sign-up")
     @RateLimiter(name = "authRegistration")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
+    @Retry(name = "database")
+    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
         return authenticationService.signUp(request);
     }
 
