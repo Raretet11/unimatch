@@ -13,10 +13,10 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Unimatch API")
-                        .version("1.0.0")
-                        .description("API documentation for Unimatch app.")
-                        .contact(new Contact().name("Developer").email("MagicRaretet@gmail.com")));
+            .info(new Info()
+                .title("Unimatch API")
+                .version("1.0.0")
+                .description("API documentation for Unimatch app.")
+                .contact(new Contact().name("Developer").email("MagicRaretet@gmail.com")));
     }
 }
