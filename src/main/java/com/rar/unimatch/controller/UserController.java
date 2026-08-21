@@ -12,9 +12,7 @@ import com.rar.unimatch.model.DTO.UserPrivateResponse;
 import com.rar.unimatch.model.DTO.UserPublicResponse;
 import com.rar.unimatch.model.mapper.UserMapper;
 import com.rar.unimatch.service.UserService;
-import com.rar.unimatch.utils.APIResponse400;
-import com.rar.unimatch.utils.APIResponse429;
-import com.rar.unimatch.utils.APIResponse500;
+import com.rar.unimatch.utils.APIErrorResponses;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -29,6 +27,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/v1/users")
 @Tag(name = "Users")
 @AllArgsConstructor
+@APIErrorResponses
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
@@ -38,18 +37,11 @@ public class UserController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Успешное получение информации о пользователе",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = UserPublicResponse.class)
         )
     )
-    @ApiResponse(
-        responseCode = "404",
-        description = "Пользователь с указанным id не найден"
-    )
-    @APIResponse429
-    @APIResponse500
     @GetMapping("/{id}")
     @CircuitBreaker(name = "database")
     @Retry(name = "database")
@@ -62,14 +54,11 @@ public class UserController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Успешное получение информации о пользователе",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = UserPrivateResponse.class)
         )
     )
-    @APIResponse429
-    @APIResponse500
     @GetMapping("/me")
     @CircuitBreaker(name = "database")
     @Retry(name = "database")
@@ -82,15 +71,11 @@ public class UserController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Возвращает обновленного пользователя",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = UserPublicResponse.class)
         )
     )
-    @APIResponse400
-    @APIResponse429
-    @APIResponse500
     @PatchMapping("/me")
     @CircuitBreaker(name = "database")
     @Retry(name = "database")

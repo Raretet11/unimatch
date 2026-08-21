@@ -9,9 +9,7 @@ import com.rar.unimatch.model.DTO.JwtAuthenticationResponse;
 import com.rar.unimatch.model.DTO.SignInRequest;
 import com.rar.unimatch.model.DTO.SignUpRequest;
 import com.rar.unimatch.service.AuthenticationService;
-import com.rar.unimatch.utils.APIResponse400;
-import com.rar.unimatch.utils.APIResponse429;
-import com.rar.unimatch.utils.APIResponse500;
+import com.rar.unimatch.utils.APIErrorResponses;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -20,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -28,6 +27,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Регистрация")
 @AllArgsConstructor
+@APIErrorResponses
 public class AuthController {
     private final AuthenticationService authenticationService;
 
@@ -37,15 +37,12 @@ public class AuthController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Успешная регистрация, возвращает JWT токен",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = JwtAuthenticationResponse.class)
         )
     )
-    @APIResponse400
-    @APIResponse429
-    @APIResponse500
+    @SecurityRequirements
     @PostMapping("/sign-up")
     @RateLimiter(name = "authRegistration")
     @CircuitBreaker(name = "database")
@@ -59,15 +56,12 @@ public class AuthController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Успешный вход, возвращает JWT токен",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = JwtAuthenticationResponse.class)
         )
     )
-    @APIResponse400
-    @APIResponse429
-    @APIResponse500
+    @SecurityRequirements
     @PostMapping("/sign-in")
     @RateLimiter(name = "authLogin")
     @CircuitBreaker(name = "database")

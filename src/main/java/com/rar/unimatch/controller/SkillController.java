@@ -14,9 +14,7 @@ import com.rar.unimatch.model.DTO.SkillPublicResponse;
 import com.rar.unimatch.model.mapper.SkillMapper;
 import com.rar.unimatch.service.SkillService;
 import com.rar.unimatch.service.UserService;
-import com.rar.unimatch.utils.APIResponse400;
-import com.rar.unimatch.utils.APIResponse429;
-import com.rar.unimatch.utils.APIResponse500;
+import com.rar.unimatch.utils.APIErrorResponses;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -32,6 +30,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/v1/skills")
 @Tag(name = "Skills")
 @AllArgsConstructor
+@APIErrorResponses
 public class SkillController {
     private final SkillService skillService;
     private final UserService userService;
@@ -42,15 +41,11 @@ public class SkillController {
     )
     @ApiResponse(
         responseCode = "200",
-        description = "Возвращает созданный скилл",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = SkillPublicResponse.class)
         )
     )
-    @APIResponse400
-    @APIResponse429
-    @APIResponse500
     @PostMapping
     @CircuitBreaker(name = "database")
     @Retry(name = "database")
@@ -69,9 +64,6 @@ public class SkillController {
             array = @ArraySchema(schema = @Schema(implementation = SkillPublicResponse.class))
         )
     )
-    @APIResponse400
-    @APIResponse429
-    @APIResponse500
     @GetMapping
     @CircuitBreaker(name = "database")
     @Retry(name = "database")
