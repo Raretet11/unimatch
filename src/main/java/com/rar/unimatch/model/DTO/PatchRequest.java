@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-public class UserPatchRequest {
+public class PatchRequest {
     public Map<String, Object> updates = new HashMap<>();
 
     @JsonAnySetter

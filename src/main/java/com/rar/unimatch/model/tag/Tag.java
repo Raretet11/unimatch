@@ -33,9 +33,6 @@ public class Tag {
     @Column(name = "name", nullable = false, unique = true, length = 255)
     private String name;
 
-    @Column(name = "formated_name", nullable = false, unique = true, length = 255)
-    private String formatedName;
-
     @Column(name = "usage_count")
     @Builder.Default
     private Integer usageCount = 0;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rar.unimatch.model.DTO.UserPatchRequest;
+import com.rar.unimatch.model.DTO.PatchRequest;
 import com.rar.unimatch.model.DTO.UserPrivateResponse;
 import com.rar.unimatch.model.DTO.UserPublicResponse;
 import com.rar.unimatch.model.mapper.UserMapper;
@@ -79,7 +79,7 @@ public class UserController {
     @PatchMapping("/me")
     @CircuitBreaker(name = "database")
     @Retry(name = "database")
-    public UserPublicResponse patchUserInfo(@RequestBody UserPatchRequest request) {
+    public UserPublicResponse patchUserInfo(@RequestBody PatchRequest request) {
         return userMapper.toPublicResponse(userService.patchUserParams(request.updates, userService.getCurrentUser()));
     }
 }
