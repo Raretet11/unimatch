@@ -23,6 +23,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format-sql: true
 
+logging:
+  level:
+    root: INFO
+    com.rar: DEBUG
+    org.springframework.web: WARN
+    org.hibernate: WARN
+
+  pattern:
+    console: '{"timestamp":"%d{ISO8601}","level":"%p","service":"${spring.application.name:}","traceId":"%X{traceId:-}","spanId":"%X{spanId:-}","parentId":"%X{parentId:-}","message":"%m","thread":"%thread","exception":"%wEx","className":"%logger{36}"}%n'
+
+
 token:
   signing:
     key: ${JWT_TOKEN_KEY}
@@ -71,3 +82,15 @@ resilience4j:
           - org.springframework.dao.QueryTimeoutException
           - java.net.ConnectException
           - java.net.SocketTimeoutException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
