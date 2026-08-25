@@ -39,10 +39,14 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus-unimatch
+
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./src/main/resources/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+
     restart: unless-stopped
 
   grafana:
@@ -71,7 +75,7 @@ services:
     container_name: loki-unimatch
 
     volumes:
-      - ./loki.yml:/etc/loki/loki.yml:ro
+      - ./src/main/resources/loki.yml:/etc/loki/loki.yml:ro
       - loki-data:/loki
 
     command:
@@ -90,7 +94,7 @@ services:
     container_name: promtail-unimatch
 
     volumes:
-      - ./promtail.yml:/etc/promtail/promtail.yml:ro
+      - ./src/main/resources/promtail.yml:/etc/promtail/promtail.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
 
@@ -110,3 +114,4 @@ volumes:
   postgres-data:
   grafana-storage:
   loki-data:
+  prometheus-data:
