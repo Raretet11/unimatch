@@ -26,12 +26,11 @@ spring:
 logging:
   level:
     root: INFO
-    com.rar: DEBUG
-    org.springframework.web: WARN
+    org.springframework: WARN
     org.hibernate: WARN
 
   pattern:
-    console: '{"timestamp":"%d{ISO8601}","level":"%p","service":"${spring.application.name:}","traceId":"%X{traceId:-}","spanId":"%X{spanId:-}","parentId":"%X{parentId:-}","message":"%m","thread":"%thread","exception":"%wEx","className":"%logger{36}"}%n'
+    console: '{"timestamp":"%d{ISO8601}","level":"%p","service":"${spring.application.name:}","message":"%m","thread":"%thread","exception":"%wEx","className":"%logger{36}"}%n'
 
 
 token:
