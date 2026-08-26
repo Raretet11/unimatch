@@ -10,9 +10,11 @@ import com.rar.unimatch.model.tag.Tag;
 import com.rar.unimatch.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TagService {
     private final TagRepository repository;
 
@@ -24,6 +26,7 @@ public class TagService {
         if (repository.existsByName(tag.getName())) {
             throw new BadRequestException("Tag \"" + tag.getName() + "\" already exists");
         }
+        log.info("Creating new tag {}", request.name());
         return repository.save(tag);
     }
 

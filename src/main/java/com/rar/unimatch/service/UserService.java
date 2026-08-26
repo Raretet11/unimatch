@@ -28,7 +28,7 @@ public class UserService {
     private final UserLinkRepository linkRepository;
 
     public User save(User user) {
-        log.info("Saved user: [" + user.getEmail() + ", " + user.getUsername() + ", " + user.getId() + "]");
+        log.info("Save user: [{}, {}, {}]", user.getEmail(), user.getUsername(), user.getId());
         return repository.save(user);
     }
 
@@ -42,6 +42,13 @@ public class UserService {
         }
 
         save(user);
+    }
+
+    public void deleteIfExists(User user) {
+        if (repository.existsById(user.getId())) {
+            repository.delete(user);
+            log.info("User {} deleted");
+        }
     }
 
     public User getByUsername(String username) {
@@ -69,7 +76,6 @@ public class UserService {
                 default -> throw new BadRequestException("Can't update field: \"" + key + "\"");
             }
         });
-        log.info("User params patch: " + updates);
         return repository.save(user);
     }
 

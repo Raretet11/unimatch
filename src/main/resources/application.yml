@@ -23,6 +23,23 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format-sql: true
 
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    default-encoding: UTF-8
+
 logging:
   level:
     root: INFO
@@ -32,10 +49,13 @@ logging:
   pattern:
     console: '{"timestamp":"%d{ISO8601}","level":"%p","service":"${spring.application.name:}","message":"%m","thread":"%thread","exception":"%wEx","className":"%logger{36}"}%n'
 
-
 token:
   signing:
     key: ${JWT_TOKEN_KEY}
+
+jwt:
+  expiration:
+    hours: 1
 
 springdoc:
   swagger-ui:
@@ -59,13 +79,23 @@ resilience4j:
         limit-for-period: 60
 
   circuitbreaker:
+    configs:
+        default:
+          registerHealthIndicator: true
+          slidingWindowSize: 10
+          minimumNumberOfCalls: 5
+          failureRateThreshold: 50
+          waitDurationInOpenState: 60000
+
     instances:
       database:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 60000
+        base-config: default
+        ignore-exceptions:
+          - com.rar.unimatch.error.ResourceNotFoundException
+          - com.rar.unimatch.error.BadRequestException
+
+      auth:
+        base-config: default
         ignore-exceptions:
           - com.rar.unimatch.error.ResourceNotFoundException
           - org.springframework.security.authentication.BadCredentialsException
@@ -93,3 +123,6 @@ management:
         enabled: true
     tags:
       application: ${spring.application.name}
+
+app:
+  base-url: http://localhost:${APP_PORT}

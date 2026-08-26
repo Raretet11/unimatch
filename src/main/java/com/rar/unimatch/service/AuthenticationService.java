@@ -22,9 +22,9 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        log.info("Sign up request: " + request.email());
         var user = User.builder()
                 .username(request.username())
                 .email(request.email())
@@ -32,14 +32,19 @@ public class AuthenticationService {
                 .role(Role.ROLE_USER)
                 .build();
 
-        userService.create(user);
+        try {
+            userService.create(user);
+            emailService.sendWelcomeEmail(request.email(), request.username());
+        } catch (Exception e) {
+            userService.deleteIfExists(user);
+            throw e;
+        }
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        log.info("Sign in request: " + request.username());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),
                 request.password()
