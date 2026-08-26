@@ -2,9 +2,11 @@ package com.rar.unimatch.model.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.rar.unimatch.model.DTO.UserLinkPublicResponse;
 import com.rar.unimatch.model.DTO.UserPrivateResponse;
 import com.rar.unimatch.model.DTO.UserPublicResponse;
 import com.rar.unimatch.model.user.User;
+import com.rar.unimatch.model.user.UserLink;
 
 @Component
 public class UserMapper {
@@ -35,6 +37,19 @@ public class UserMapper {
 
         return new UserPrivateResponse(
             user.getEmail()
+        );
+    }
+
+    public UserLinkPublicResponse toPublicResponse(UserLink link) {
+        if (link == null) {
+            return null;
+        }
+
+        return new UserLinkPublicResponse(
+            link.getId(),
+            link.getLinkName(),
+            link.getLinkValue(),
+            link.getIsPublic()
         );
     }
 }

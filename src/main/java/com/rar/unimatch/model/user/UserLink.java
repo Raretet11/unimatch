@@ -29,28 +29,28 @@ import java.time.LocalDateTime;
 @Table(name="user_links")
 @Entity
 public class UserLink {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
     @Column(name = "link_name")
     private String linkName;
-    
+
     @Column(name = "link_value")
     private String linkValue;
-    
+
     @Column(name = "is_public")
     private Boolean isPublic;
-    
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
