@@ -22,7 +22,7 @@ public class TagService {
             .build();
 
         if (repository.existsByName(tag.getName())) {
-            throw new BadRequestException("Tag " + tag.getName() + " already exists");
+            throw new BadRequestException("Tag \"" + tag.getName() + "\" already exists");
         }
         return repository.save(tag);
     }
