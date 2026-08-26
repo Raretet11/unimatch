@@ -14,23 +14,26 @@ import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository repository;
 
     public User save(User user) {
+        log.info("Saved user: [" + user.getEmail() + ", " + user.getUsername() + ", " + user.getId() + "]");
         return repository.save(user);
     }
 
     public void create(User user) {
         if (repository.existsByUsername(user.getUsername())) {
-            throw new BadRequestException("User with name " + user.getUsername() + " already exists");
+            throw new BadRequestException("User with name: \"" + user.getUsername() + "\" already exists");
         }
 
         if (repository.existsByEmail(user.getEmail())) {
-            throw new BadRequestException("User with email " + user.getEmail() + " already exists");
+            throw new BadRequestException("User with email: \"" + user.getEmail() + "\" already exists");
         }
 
         save(user);
@@ -38,12 +41,12 @@ public class UserService {
 
     public User getByUsername(String username) {
         return repository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with name " + username + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with name: \"" + username + "\" not found"));
     }
 
     public User getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id \"" + id + "\" not found"));
     }
 
     public User patchUserParams(Map<String, Object> updates, User user) {
@@ -58,9 +61,10 @@ public class UserService {
                 case "studyProgram" -> user.setStudyProgram((String) value);
                 case "campus" -> user.setCampus((String) value);
                 case "description" -> user.setDescription((String) value);
-                default -> throw new BadRequestException("Can't update field " + key);
+                default -> throw new BadRequestException("Can't update field: \"" + key + "\"");
             }
         });
+        log.info("User params patch: " + updates);
         return repository.save(user);
     }
 

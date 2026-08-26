@@ -12,9 +12,11 @@ import com.rar.unimatch.model.user.Role;
 import com.rar.unimatch.model.user.User;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AuthenticationService {
     private final UserService userService;
     private final JwtService jwtService;
@@ -22,6 +24,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
+        log.info("Sign up request: " + request.email());
         var user = User.builder()
                 .username(request.username())
                 .email(request.email())
@@ -36,6 +39,7 @@ public class AuthenticationService {
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
+        log.info("Sign in request: " + request.username());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),
                 request.password()
