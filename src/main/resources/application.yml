@@ -129,4 +129,4 @@ management:
       application: ${spring.application.name}
 
 app:
-  base-url: http://localhost:${APP_PORT}
+  base-url: ${BASE_URL}

@@ -29,7 +29,7 @@ services:
       SWAGGER_ENABLED: ${SWAGGER_ENABLED}
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
-      APP_PORT: ${APP_PORT}
+      BASE_URL: ${BASE_URL}
 
     ports:
       - "${APP_PORT}:8080"
