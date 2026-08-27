@@ -78,6 +78,10 @@ resilience4j:
         base-config: default
         limit-for-period: 60
 
+      authVerifyEmail:
+        base-config: default
+        limit-for-period: 20
+
   circuitbreaker:
     configs:
         default:

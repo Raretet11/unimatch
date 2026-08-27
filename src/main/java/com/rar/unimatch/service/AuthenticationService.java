@@ -4,6 +4,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rar.unimatch.model.DTO.JwtAuthenticationResponse;
 import com.rar.unimatch.model.DTO.SignInRequest;
@@ -23,7 +24,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final EmailVerificationTokenService tokenService;
 
+    @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
         var user = User.builder()
                 .username(request.username())
@@ -32,13 +35,9 @@ public class AuthenticationService {
                 .role(Role.ROLE_USER)
                 .build();
 
-        try {
-            userService.create(user);
-            emailService.sendWelcomeEmail(request.email(), request.username());
-        } catch (Exception e) {
-            userService.deleteIfExists(user);
-            throw e;
-        }
+        userService.create(user);
+        var token = tokenService.createVerificationToken(user);
+        emailService.sendVerificationEmail(user, token.getToken());
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
@@ -55,6 +54,14 @@ public class AuthenticationService {
                 .loadUserByUsername(request.username());
 
         var jwt = jwtService.generateToken(user);
+        return new JwtAuthenticationResponse(jwt);
+    }
+
+    public JwtAuthenticationResponse verifyEmail(String token) {
+        User verifiedUser = tokenService.verifyToken(token);
+        String jwt = jwtService.generateToken(verifiedUser);
+
+        log.info("Email verified for user: {}, with email: {}", verifiedUser.getUsername(), verifiedUser.getEmail());
         return new JwtAuthenticationResponse(jwt);
     }
 }
