@@ -54,7 +54,7 @@ public class EmailVerificationTokenService {
         }
 
         if (token.isExpired()) {
-            throw new BadRequestException("Verification token has expired. Please request a new one.");
+            throw new BadRequestException("Verification token has expired");
         }
 
         token.setConfirmed(true);

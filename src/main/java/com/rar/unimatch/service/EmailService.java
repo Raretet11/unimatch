@@ -2,6 +2,7 @@ package com.rar.unimatch.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,7 +13,6 @@ import com.rar.unimatch.model.user.User;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
@@ -28,21 +28,16 @@ public class EmailService {
     @Value("${app.base-url}")
     private String baseUrl;
 
+    private static final String VERIFY_EMAIL_API_PATH = "/api/v1/auth/verify-email?token=";
+
     public void sendVerificationEmail(User user, String token) {
+        Context context = buildContext(user, token);
+
+        String htmlContent = templateEngine.process("email/verification-email", context);
+
+        MimeMessage message = mailSender.createMimeMessage();
+
         try {
-            String verificationUrl = baseUrl + "/api/v1/auth/verify-email?token=" + token;
-
-            Context context = new Context();
-            context.setVariable("username", user.getUsername());
-            context.setVariable("verificationUrl", verificationUrl);
-            context.setVariable("email", user.getEmail());
-            context.setVariable("expiryHours", 24);
-            context.setVariable("supportEmail", "support@unimatch.com");
-            context.setVariable("year", java.time.Year.now().getValue());
-
-            String htmlContent = templateEngine.process("email/verification-email", context);
-
-            MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
@@ -52,10 +47,23 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Verification email sent to: {}", user.getEmail());
-            
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Failed to send verification email to: {}", user.getEmail(), e);
             throw new RuntimeException("Failed to send verification email", e);
         }
+    }
+
+    private Context buildContext(User user, String token) {
+        String verificationUrl = baseUrl + VERIFY_EMAIL_API_PATH + token;
+
+        Context context = new Context();
+        context.setVariable("username", user.getUsername());
+        context.setVariable("verificationUrl", verificationUrl);
+        context.setVariable("email", user.getEmail());
+        context.setVariable("expiryHours", 24);
+        context.setVariable("supportEmail", "support@unimatch.com");
+        context.setVariable("year", java.time.Year.now().getValue());
+
+        return context;
     }
 }
