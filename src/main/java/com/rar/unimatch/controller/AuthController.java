@@ -1,8 +1,10 @@
 package com.rar.unimatch.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rar.unimatch.model.DTO.JwtAuthenticationResponse;
@@ -45,7 +47,7 @@ public class AuthController {
     @SecurityRequirements
     @PostMapping("/sign-up")
     @RateLimiter(name = "authRegistration")
-    @CircuitBreaker(name = "database")
+    @CircuitBreaker(name = "auth")
     @Retry(name = "database")
     public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
         return authenticationService.signUp(request);
@@ -64,9 +66,21 @@ public class AuthController {
     @SecurityRequirements
     @PostMapping("/sign-in")
     @RateLimiter(name = "authLogin")
-    @CircuitBreaker(name = "database")
+    @CircuitBreaker(name = "auth")
     @Retry(name = "database")
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
         return authenticationService.signIn(request);
+    }
+
+    @Operation(
+        summary = "Подтверждение email по токену"
+    )
+    @SecurityRequirements
+    @GetMapping("/verify-email")
+    @RateLimiter(name = "authVerifyEmail")
+    @CircuitBreaker(name = "auth")
+    @Retry(name = "database")
+    public JwtAuthenticationResponse verifyEmail(@RequestParam String token) {
+        return authenticationService.verifyEmail(token);
     }
 }

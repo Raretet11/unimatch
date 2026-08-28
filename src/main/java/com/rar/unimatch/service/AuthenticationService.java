@@ -4,6 +4,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rar.unimatch.model.DTO.JwtAuthenticationResponse;
 import com.rar.unimatch.model.DTO.SignInRequest;
@@ -22,9 +23,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
+    private final EmailVerificationTokenService tokenService;
 
+    @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
-        log.info("Sign up request: " + request.email());
         var user = User.builder()
                 .username(request.username())
                 .email(request.email())
@@ -33,13 +36,14 @@ public class AuthenticationService {
                 .build();
 
         userService.create(user);
+        var token = tokenService.createVerificationToken(user);
+        emailService.sendVerificationEmail(user, token.getToken());
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        log.info("Sign in request: " + request.username());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),
                 request.password()
@@ -50,6 +54,14 @@ public class AuthenticationService {
                 .loadUserByUsername(request.username());
 
         var jwt = jwtService.generateToken(user);
+        return new JwtAuthenticationResponse(jwt);
+    }
+
+    public JwtAuthenticationResponse verifyEmail(String token) {
+        User verifiedUser = tokenService.verifyToken(token);
+        String jwt = jwtService.generateToken(verifiedUser);
+
+        log.info("Email verified for user: {}, with email: {}", verifiedUser.getUsername(), verifiedUser.getEmail());
         return new JwtAuthenticationResponse(jwt);
     }
 }

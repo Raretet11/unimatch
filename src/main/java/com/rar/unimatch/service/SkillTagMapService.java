@@ -9,9 +9,11 @@ import com.rar.unimatch.model.tag.SkillTag;
 import com.rar.unimatch.repository.SkillTagMappingRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SkillTagMapService {
     private final SkillTagMappingRepository mappingRepository;
 
@@ -22,6 +24,7 @@ public class SkillTagMapService {
                 return skillTag;
             })
             .collect(Collectors.toList());
+        log.info("Add tags to {}", skillId);
         return mappingRepository.saveAll(skillTags);
     }
 

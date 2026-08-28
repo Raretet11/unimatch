@@ -16,9 +16,11 @@ import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.SkillRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SkillService {
     private final SkillRepository repository;
 
@@ -54,6 +56,7 @@ public class SkillService {
                 default -> throw new BadRequestException("Can't update field " + key);
             }
         });
+        log.info("Patch params {} for: {}", updates.toString(), skillId);
         return repository.save(skill);
     }
 }
