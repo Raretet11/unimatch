@@ -55,7 +55,7 @@ public class SkillController {
     )
     @PostMapping
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public SkillPublicResponse createSkill(@RequestBody SkillCreateRequest request) {
         return skillMapper.toPublicResponse(skillService.create(request, userService.getCurrentUser()));
     }
@@ -73,7 +73,7 @@ public class SkillController {
     )
     @GetMapping
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public List<SkillPublicResponse> getSkillsByUser() {
         return skillService.getSkillsByUser(userService.getCurrentUser())
             .stream()
@@ -93,7 +93,7 @@ public class SkillController {
     )
     @PatchMapping("/{id}")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public SkillPublicResponse patchUserInfo(@RequestBody PatchRequest request, @PathVariable Long id) {
         return skillMapper.toPublicResponse(skillService.patchSkillParams(request.updates, id));
     }
@@ -110,7 +110,7 @@ public class SkillController {
     )
     @PostMapping("/{id}/tags")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public List<SkillTag> addTags(@PathVariable Long id, @RequestBody TagAddRequest request) {
         return skillTagMapService.addTags(request.tagsId(), id);
     }
@@ -127,7 +127,7 @@ public class SkillController {
     )
     @GetMapping("/{id}/tags")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public List<Long> getTags(@PathVariable Long id) {
         return skillTagMapService.getTagsIdBySkillId(id);
     }

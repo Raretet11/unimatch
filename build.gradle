@@ -58,6 +58,9 @@ dependencies {
 
 	implementation 'io.micrometer:micrometer-registry-prometheus:1.17.0'
 	implementation 'io.micrometer:micrometer-tracing:1.7.1'
+
+	implementation 'io.minio:minio:9.0.3'
+	implementation 'net.coobird:thumbnailator:0.4.21'
 }
 
 tasks.named('test') {

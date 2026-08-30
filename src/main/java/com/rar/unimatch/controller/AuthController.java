@@ -48,7 +48,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     @RateLimiter(name = "authRegistration")
     @CircuitBreaker(name = "auth")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
         return authenticationService.signUp(request);
     }
@@ -67,7 +67,7 @@ public class AuthController {
     @PostMapping("/sign-in")
     @RateLimiter(name = "authLogin")
     @CircuitBreaker(name = "auth")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
         return authenticationService.signIn(request);
     }
@@ -79,7 +79,7 @@ public class AuthController {
     @GetMapping("/verify-email")
     @RateLimiter(name = "authVerifyEmail")
     @CircuitBreaker(name = "auth")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public JwtAuthenticationResponse verifyEmail(@RequestParam String token) {
         return authenticationService.verifyEmail(token);
     }

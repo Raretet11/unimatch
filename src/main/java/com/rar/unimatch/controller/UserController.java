@@ -51,7 +51,7 @@ public class UserController {
     )
     @GetMapping("/{id}")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public UserPublicResponse getUserById(@PathVariable Long id) {
         return userMapper.toPublicResponse(userService.getById(id));
     }
@@ -68,7 +68,7 @@ public class UserController {
     )
     @GetMapping("/me")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public UserPrivateResponse getUserInfoByToken() {
         return userMapper.toPrivateResponse(userService.getCurrentUser());
     }
@@ -85,7 +85,7 @@ public class UserController {
     )
     @PatchMapping("/me")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public UserPublicResponse patchUserInfo(@RequestBody PatchRequest request) {
         return userMapper.toPublicResponse(userService.patchUserParams(request.updates, userService.getCurrentUser()));
     }
@@ -102,7 +102,7 @@ public class UserController {
     )
     @PostMapping("/links")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public UserLinkPublicResponse addUserLink(@RequestBody UserLinkCreateRequest request) {
         return userMapper.toPublicResponse(userService.createUserLink(request, userService.getCurrentUser()));
     }
@@ -119,7 +119,7 @@ public class UserController {
     )
     @GetMapping("/{id}/links")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public List<UserLinkPublicResponse> getUserLinks(@PathVariable Long id) {
         return userService.getLinks(id)
             .stream()

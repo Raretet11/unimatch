@@ -46,7 +46,7 @@ public class TagController {
     )
     @PostMapping
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public TagPublicResponse createTag(@RequestBody TagCreateRequest request) {
         return tagMapper.toPublicResponse(tagService.create(request));
     }
@@ -63,7 +63,7 @@ public class TagController {
     )
     @GetMapping("/search")
     @CircuitBreaker(name = "database")
-    @Retry(name = "database")
+    @Retry(name = "default")
     public List<TagPublicResponse> findSimilarTag(@RequestBody TagFindSimilarRequest request) {
         return tagService.findSimilar(request.tag(), request.threshold(), request.limit())
                 .stream()
