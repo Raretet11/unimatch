@@ -32,6 +32,7 @@ services:
       BASE_URL: ${BASE_URL}
       MINIO_USERNAME: ${MINIO_USERNAME}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
+      MEILI_API_KEY: ${MEILI_API_KEY}
 
     ports:
       - "${APP_PORT}:8080"
@@ -118,7 +119,6 @@ services:
 
   minio:
     image: minio/minio:latest
-
     container_name: minio-unimatch
 
     ports:
@@ -137,9 +137,29 @@ services:
 
     restart: unless-stopped
 
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch-unimatch
+
+    environment:
+      MEILI_ENV: ${MEILI_ENV:-development}
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_NO_ANALYTICS: ${MEILI_NO_ANALYTICS:-true}
+      MEILI_HTTP_ADDR: 0.0.0.0:7700
+      MEILI_DB_PATH: /meili_data/data.ms
+
+    ports:
+      - "7700:7700"
+
+    volumes:
+      - meilisearch-data:/meili_data
+
+    restart: unless-stopped
+
 volumes:
   postgres-data:
   grafana-storage:
   loki-data:
   prometheus-data:
   minio-data:
+  meilisearch-data:

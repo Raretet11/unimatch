@@ -90,27 +90,23 @@ resilience4j:
           minimumNumberOfCalls: 5
           failureRateThreshold: 50
           waitDurationInOpenState: 60000
+        ignore-exceptions:
+          - com.rar.unimatch.error.ResourceNotFoundException
+          - org.springframework.security.authentication.BadCredentialsException
+          - com.rar.unimatch.error.BadRequestException
 
     instances:
       database:
         base-config: default
-        ignore-exceptions:
-          - com.rar.unimatch.error.ResourceNotFoundException
-          - com.rar.unimatch.error.BadRequestException
 
       auth:
         base-config: default
-        ignore-exceptions:
-          - com.rar.unimatch.error.ResourceNotFoundException
-          - org.springframework.security.authentication.BadCredentialsException
-          - com.rar.unimatch.error.BadRequestException
 
       minio:
         base-config: default
-        ignore-exceptions:
-          - com.rar.unimatch.error.ResourceNotFoundException
-          - org.springframework.security.authentication.BadCredentialsException
-          - com.rar.unimatch.error.BadRequestException
+
+      meilisearch:
+        base-config: default
 
   retry:
     instances:
@@ -145,3 +141,7 @@ minio:
   access-key: ${MINIO_USERNAME}
   secret-key: ${MINIO_PASSWORD}
   bucket: unimatch-images
+
+meilisearch:
+  host: ${MEILISEARCH_HOST:http://meilisearch:7700}
+  api-key: ${MEILI_API_KEY}

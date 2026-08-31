@@ -61,6 +61,9 @@ dependencies {
 
 	implementation 'io.minio:minio:9.0.3'
 	implementation 'net.coobird:thumbnailator:0.4.21'
+
+	implementation 'com.meilisearch.sdk:meilisearch-java:0.21.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
 }
 
 tasks.named('test') {

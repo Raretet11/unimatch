@@ -9,14 +9,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rar.unimatch.model.DTO.PatchRequest;
 import com.rar.unimatch.model.DTO.SkillCreateRequest;
 import com.rar.unimatch.model.DTO.SkillPublicResponse;
+import com.rar.unimatch.model.DTO.SkillSearchResponse;
 import com.rar.unimatch.model.DTO.TagAddRequest;
 import com.rar.unimatch.model.mapper.SkillMapper;
 import com.rar.unimatch.model.tag.SkillTag;
+import com.rar.unimatch.service.MeilisearchService;
 import com.rar.unimatch.service.SkillService;
 import com.rar.unimatch.service.SkillTagMapService;
 import com.rar.unimatch.service.UserService;
@@ -42,6 +45,7 @@ public class SkillController {
     private final UserService userService;
     private final SkillMapper skillMapper;
     private final SkillTagMapService skillTagMapService;
+    private final MeilisearchService meilisearchService;
 
     @Operation(
         summary = "Создание скилла от имени пользователя"
@@ -130,5 +134,24 @@ public class SkillController {
     @Retry(name = "default")
     public List<Long> getTags(@PathVariable Long id) {
         return skillTagMapService.getTagsIdBySkillId(id);
+    }
+
+    @Operation(summary = "Поиск скиллов по тексту")
+    @ApiResponse(
+        responseCode = "200",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = SkillSearchResponse.class)
+        )
+    )
+    @GetMapping("/search")
+    @CircuitBreaker(name = "meilisearch")
+    @Retry(name = "default")
+    public SkillSearchResponse searchSkills(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "10") Integer limit,
+            @RequestParam(defaultValue = "0") Integer offset
+    ) {
+        return meilisearchService.searchSkills(q, limit, offset);
     }
 }
