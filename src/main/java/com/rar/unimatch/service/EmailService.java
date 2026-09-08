@@ -3,6 +3,8 @@ package com.rar.unimatch.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Clock;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,6 +23,7 @@ import jakarta.mail.internet.MimeMessage;
 public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final Clock clock;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -62,7 +65,7 @@ public class EmailService {
         context.setVariable("email", user.getEmail());
         context.setVariable("expiryHours", 24);
         context.setVariable("supportEmail", "support@unimatch.com");
-        context.setVariable("year", java.time.Year.now().getValue());
+        context.setVariable("year", java.time.Year.now(clock).getValue());
 
         return context;
     }

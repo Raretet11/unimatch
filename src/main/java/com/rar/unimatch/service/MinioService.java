@@ -1,5 +1,6 @@
 package com.rar.unimatch.service;
 
+import com.rar.unimatch.error.BadRequestException;
 import com.rar.unimatch.model.DTO.UploadUrlRequest;
 import com.rar.unimatch.model.DTO.UploadUrlResponse;
 import com.rar.unimatch.model.user.User;
@@ -7,6 +8,7 @@ import com.rar.unimatch.model.user.User;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.Http.Method;
 import io.minio.MinioClient;
+import io.minio.PostPolicy;
 import io.minio.RemoveObjectArgs;
 import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
@@ -16,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class MinioService {
     private final MinioClient minioClient;
+    private final Clock clock;
 
     @Value("${minio.link.upload-url.expiry-minutes}")
     private Integer uploadUrlExpiryInMinutes;
@@ -34,27 +39,33 @@ public class MinioService {
     @Value("${minio.bucket}")
     private String bucket;
 
+    @Value("${minio.endpoint}")
+    private String endpoint;
+
+    @Value("${minio.max-file-size-bytes}")
+    private Long maxFileSizeBytes;
+
     public UploadUrlResponse generateUploadUrl(UploadUrlRequest request, User user) throws MinioException {
+        if (!request.contentType().startsWith("image/")) {
+            throw new BadRequestException("Image only");
+        }
+
         String objectKey = String.format(
             "%s/%s",
-            user.getId(),
-            request.fileName()
+            user.getId()
         );
 
-        String uploadUrl = minioClient.getPresignedObjectUrl(
-            GetPresignedObjectUrlArgs.builder()
-                .bucket(bucket)
-                .object(objectKey)
-                .method(Method.PUT)
-                .expiry(uploadUrlExpiryInMinutes, TimeUnit.MINUTES)
-                .extraQueryParams(Map.of(
-                    "Content-Type", request.contentType()
-                ))
-                .build()
-        );
+        PostPolicy postPolicy = new PostPolicy(bucket, ZonedDateTime.now(clock).plusMinutes(uploadUrlExpiryInMinutes));
 
-        log.info("Generated upload URL for key: {}", objectKey);
-        return new UploadUrlResponse(uploadUrl, objectKey);
+        postPolicy.addEqualsCondition("key", objectKey);
+        postPolicy.addEqualsCondition("Content-Type", request.contentType());
+        postPolicy.addContentLengthRangeCondition(0, maxFileSizeBytes);
+
+        Map<String, String> formData = minioClient.getPresignedPostFormData(postPolicy);
+
+        String uploadUrl = endpoint + "/" + bucket + "/";
+
+        return new UploadUrlResponse(uploadUrl, objectKey, formData);
     }
 
     public boolean fileExists(String objectKey) throws MinioException {

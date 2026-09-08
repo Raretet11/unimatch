@@ -9,6 +9,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.minio.errors.MinioException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/files")
+@RequestMapping("/api/v1/images")
+@Tag(name = "Images")
 @RequiredArgsConstructor
 @Slf4j
-public class FilesController {
+public class ImagesController {
     private final MinioService minioService;
     private final UserService userService;
 
-    @Operation(summary = "Получение ссылки для прямой загрузки файлов на сервер")
+    @Operation(summary = "Получение ссылки для прямой загрузки картинки на сервер")
     @GetMapping("/url/upload")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
@@ -33,7 +35,7 @@ public class FilesController {
         return minioService.generateUploadUrl(request, userService.getCurrentUser());
     }
 
-    @Operation(summary = "Проверка на наличие файла")
+    @Operation(summary = "Проверка на наличие картинки")
     @GetMapping("/exists")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
@@ -42,7 +44,7 @@ public class FilesController {
         return Map.of("exists", exists);
     }
 
-    @Operation(summary = "Получение ссылки для прямого скачивания файла с сервера")
+    @Operation(summary = "Получение ссылки для прямого скачивания картинки с сервера")
     @GetMapping("/url/download")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")

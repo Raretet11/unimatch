@@ -146,6 +146,7 @@ minio:
       expiry-minutes: 5
     download-url:
       expiry-minutes: 5
+  max-file-size-bytes: 5242880
 
 meilisearch:
   host: ${MEILISEARCH_HOST:http://meilisearch:7700}

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,6 +21,8 @@ import java.util.UUID;
 public class EmailVerificationTokenService {
     private final EmailVerificationTokenRepository tokenRepository;
     private final UserRepository userRepository;
+    private final Clock clock;
+
     private static final int TOKEN_EXPIRY_HOURS = 24;
 
     @Transactional
@@ -33,10 +36,10 @@ public class EmailVerificationTokenService {
         EmailVerificationToken token = EmailVerificationToken.builder()
             .token(tokenValue)
             .user(user)
-            .expiryDate(LocalDateTime.now().plusHours(TOKEN_EXPIRY_HOURS))
+            .expiryDate(LocalDateTime.now(clock).plusHours(TOKEN_EXPIRY_HOURS))
             .confirmed(false)
             .build();
-        
+
         EmailVerificationToken savedToken = tokenRepository.save(token);
         log.info("Created verification token for user: {}, expires at: {}", 
             user.getUsername(), savedToken.getExpiryDate());
