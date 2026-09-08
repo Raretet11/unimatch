@@ -141,6 +141,11 @@ minio:
   access-key: ${MINIO_USERNAME}
   secret-key: ${MINIO_PASSWORD}
   bucket: unimatch-images
+  link:
+    upload-url:
+      expiry-minutes: 5
+    download-url:
+      expiry-minutes: 5
 
 meilisearch:
   host: ${MEILISEARCH_HOST:http://meilisearch:7700}

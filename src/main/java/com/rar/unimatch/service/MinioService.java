@@ -25,6 +25,12 @@ import java.util.concurrent.TimeUnit;
 public class MinioService {
     private final MinioClient minioClient;
 
+    @Value("${minio.link.upload-url.expiry-minutes}")
+    private Integer uploadUrlExpiryInMinutes;
+
+    @Value("${minio.link.download-url.expiry-minutes}")
+    private Integer downloadUrlExpiryInMinutes;
+
     @Value("${minio.bucket}")
     private String bucket;
 
@@ -40,7 +46,7 @@ public class MinioService {
                 .bucket(bucket)
                 .object(objectKey)
                 .method(Method.PUT)
-                .expiry(5, TimeUnit.MINUTES)
+                .expiry(uploadUrlExpiryInMinutes, TimeUnit.MINUTES)
                 .extraQueryParams(Map.of(
                     "Content-Type", request.contentType()
                 ))
@@ -67,7 +73,7 @@ public class MinioService {
                 .bucket(bucket)
                 .object(objectKey)
                 .method(Method.GET)
-                .expiry(15, TimeUnit.MINUTES)
+                .expiry(downloadUrlExpiryInMinutes, TimeUnit.MINUTES)
                 .build()
         );
         return uploadUrl;
