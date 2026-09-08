@@ -1,6 +1,6 @@
 package com.rar.unimatch.controller;
 
-import com.rar.unimatch.model.DTO.UploadUrlRequest;
+import com.rar.unimatch.model.DTO.UploadProfilePictureUrlRequest;
 import com.rar.unimatch.model.DTO.UploadUrlResponse;
 import com.rar.unimatch.service.MinioService;
 import com.rar.unimatch.service.UserService;
@@ -27,16 +27,16 @@ public class ImagesController {
     private final MinioService minioService;
     private final UserService userService;
 
-    @Operation(summary = "Получение ссылки для прямой загрузки картинки на сервер")
-    @GetMapping("/url/upload")
+    @Operation(summary = "Получение ссылки для прямой загрузки аватарки на сервер")
+    @GetMapping("/profiles/url/upload")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
-    public UploadUrlResponse getUploadUrl(@Valid @RequestBody UploadUrlRequest request) throws MinioException {
-        return minioService.generateUploadUrl(request, userService.getCurrentUser());
+    public UploadUrlResponse getUploadUrl(@Valid @RequestBody UploadProfilePictureUrlRequest request) throws MinioException {
+        return minioService.generateUploadProfilePictureUrl(request, userService.getCurrentUser());
     }
 
     @Operation(summary = "Проверка на наличие картинки")
-    @GetMapping("/exists")
+    @GetMapping("/profiles/exists")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
     public Map<String, Boolean> checkFileExists(@RequestParam String objectKey) throws MinioException {
@@ -45,7 +45,7 @@ public class ImagesController {
     }
 
     @Operation(summary = "Получение ссылки для прямого скачивания картинки с сервера")
-    @GetMapping("/url/download")
+    @GetMapping("/profiles/url/download")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
     public Map<String, String> getDownloadUrl(@RequestParam String key) throws MinioException {
@@ -56,12 +56,12 @@ public class ImagesController {
         );
     }
 
-    @Operation(summary = "Удаление файла")
-    @DeleteMapping("/{key}")
+    @Operation(summary = "Удаление аватарки пользователем")
+    @DeleteMapping("/profiles/me")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
-    public ResponseEntity<Void> deleteFile(@PathVariable String key) throws MinioException {
-        log.info("Deleting file: {}", key);
+    public ResponseEntity<Void> deleteFile() throws MinioException {
+        String key = minioService.generateProfilePictureKey(userService.getCurrentUser());
         minioService.deleteFile(key);
         return ResponseEntity.noContent().build();
     }

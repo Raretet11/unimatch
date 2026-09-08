@@ -1,7 +1,7 @@
 package com.rar.unimatch.service;
 
 import com.rar.unimatch.error.BadRequestException;
-import com.rar.unimatch.model.DTO.UploadUrlRequest;
+import com.rar.unimatch.model.DTO.UploadProfilePictureUrlRequest;
 import com.rar.unimatch.model.DTO.UploadUrlResponse;
 import com.rar.unimatch.model.user.User;
 
@@ -45,15 +45,16 @@ public class MinioService {
     @Value("${minio.max-file-size-bytes}")
     private Long maxFileSizeBytes;
 
-    public UploadUrlResponse generateUploadUrl(UploadUrlRequest request, User user) throws MinioException {
+    public UploadUrlResponse generateUploadProfilePictureUrl(UploadProfilePictureUrlRequest request, User user) throws MinioException {
         if (!request.contentType().startsWith("image/")) {
             throw new BadRequestException("Image only");
         }
 
-        String objectKey = String.format(
-            "%s/%s",
-            user.getId()
-        );
+        String objectKey = generateProfilePictureKey(user);
+
+        if (fileExists(objectKey)) {
+            throw new BadRequestException("User already have profile picture");
+        }
 
         PostPolicy postPolicy = new PostPolicy(bucket, ZonedDateTime.now(clock).plusMinutes(uploadUrlExpiryInMinutes));
 
@@ -66,6 +67,10 @@ public class MinioService {
         String uploadUrl = endpoint + "/" + bucket + "/";
 
         return new UploadUrlResponse(uploadUrl, objectKey, formData);
+    }
+
+    public String generateProfilePictureKey(User user) {
+        return user.getId().toString();
     }
 
     public boolean fileExists(String objectKey) throws MinioException {
