@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS comments (
     id BIGSERIAL PRIMARY KEY,
-    parent_comment_id BIGINT REFERENCES comments(id),
+    parent_comment_id BIGINT REFERENCES comments(id) ON DELETE CASCADE,
     from_user_id BIGINT NOT NULL REFERENCES users(id),
     to_user_id BIGINT NOT NULL REFERENCES users(id),
     rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),

@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -60,9 +59,8 @@ public class ImagesController {
     @DeleteMapping("/profiles/me")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
-    public ResponseEntity<Void> deleteFile() throws MinioException {
+    public void deleteFile() throws MinioException {
         String key = minioService.generateProfilePictureKey(userService.getCurrentUser());
         minioService.deleteFile(key);
-        return ResponseEntity.noContent().build();
     }
 }

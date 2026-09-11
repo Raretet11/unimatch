@@ -53,12 +53,6 @@ public class MeilisearchService {
     }
 
     @Transactional
-    public void updateSkill(Long skillId) {
-        indexSkill(skillId);
-        log.info("Updated skill {} in Meilisearch", skillId);
-    }
-
-    @Transactional
     public void deleteSkill(Long skillId) {
         skillsIndex.deleteDocument(String.valueOf(skillId));
         log.info("Deleted skill {} from Meilisearch", skillId);

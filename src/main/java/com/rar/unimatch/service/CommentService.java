@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.rar.unimatch.error.BadRequestException;
 import com.rar.unimatch.model.DTO.CommentCreateRequest;
 import com.rar.unimatch.model.comment.Comment;
+import com.rar.unimatch.model.comment.RatingSummary;
 import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.CommentRepository;
 
@@ -29,11 +30,16 @@ public class CommentService {
             .toUserId(request.toUserId())
             .rating(request.rating())
             .build();
+        log.info("Create comment from user {} to user {}", user.getId(), request.toUserId());
         return repository.save(comment);
     }
 
     public void delete(long id) {
         log.info("Delete comment with id: {}", id);
-        repository.delete(repository.getReferenceById(id));
+        repository.deleteById(id);
+    }
+
+    public RatingSummary getRatingSummary(long id) {
+        return repository.getRatingSummary(id);
     }
 }

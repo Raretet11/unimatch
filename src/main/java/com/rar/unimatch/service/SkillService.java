@@ -65,7 +65,7 @@ public class SkillService {
         });
         log.info("Patch params {} for: {}", updates.toString(), skillId);
         Skill result = repository.save(skill);
-        meilisearchService.updateSkill(result.getId());
+        meilisearchService.indexSkill(result.getId());
         return result;
     }
 }
