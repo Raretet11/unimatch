@@ -1,5 +1,8 @@
 package com.rar.unimatch.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,7 @@ import com.rar.unimatch.utils.APIErrorResponses;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,7 +57,7 @@ public class CommentController {
     }
 
     @Operation(summary = "Удалить только комментарий с подветкой")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public void deleteComment(@PathVariable long id) {
@@ -73,5 +77,23 @@ public class CommentController {
     @Retry(name = "default")
     public RatingSummary getInfo(@PathVariable long id) {
         return commentService.getRatingSummary(id);
+    }
+
+    @Operation(summary = "Получить все комментарии к пользователю")
+    @ApiResponse(
+        responseCode = "200",
+        content = @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = CommentPublicResponse.class))
+        )
+    )
+    @GetMapping("/{id}")
+    @CircuitBreaker(name = "database")
+    @Retry(name = "default")
+    public List<CommentPublicResponse> getByUserId(@PathVariable long id) {
+        return commentService.getByUser(id)
+            .stream()
+            .map(commentMapper::toPublicResponse)
+            .collect(Collectors.toList());
     }
 }

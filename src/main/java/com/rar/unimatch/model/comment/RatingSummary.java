@@ -1,3 +1,5 @@
 package com.rar.unimatch.model.comment;
 
-public record RatingSummary(double avg, long total) {}
+import java.math.BigDecimal;
+
+public record RatingSummary(BigDecimal avg, long total) {}

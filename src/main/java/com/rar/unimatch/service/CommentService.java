@@ -1,5 +1,7 @@
 package com.rar.unimatch.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.rar.unimatch.error.BadRequestException;
@@ -23,6 +25,13 @@ public class CommentService {
             throw new BadRequestException("Can't comment on yourself");
         }
 
+        if (request.parentCommentId() != null) {
+            Comment parentComment = repository.getReferenceById(request.parentCommentId());
+            if (!parentComment.getToUserId().equals(request.toUserId())) {
+                throw new BadRequestException("To user id has to be the same as parent's comment to user id");
+            }
+        }
+
         Comment comment = Comment.builder()
             .commentText(request.commentText())
             .parentCommentId(request.parentCommentId())
@@ -30,6 +39,7 @@ public class CommentService {
             .toUserId(request.toUserId())
             .rating(request.rating())
             .build();
+
         log.info("Create comment from user {} to user {}", user.getId(), request.toUserId());
         return repository.save(comment);
     }
@@ -41,5 +51,9 @@ public class CommentService {
 
     public RatingSummary getRatingSummary(long id) {
         return repository.getRatingSummary(id);
+    }
+
+    public List<Comment> getByUser(long userId) {
+        return repository.findByToUserId(userId);
     }
 }

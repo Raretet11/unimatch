@@ -1,5 +1,7 @@
 package com.rar.unimatch.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +19,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         WHERE to_user_id = :userId
         """, nativeQuery = true)
     RatingSummary getRatingSummary(@Param("userId") Long userId);
+
+    List<Comment> findByToUserId(long userId);
 }
