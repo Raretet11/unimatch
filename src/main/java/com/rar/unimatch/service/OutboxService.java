@@ -7,11 +7,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rar.unimatch.error.ResourceNotFoundException;
+import com.rar.unimatch.model.outbox.IndexSkillPayload;
 import com.rar.unimatch.model.outbox.OutboxEvent;
 import com.rar.unimatch.model.outbox.OutboxEventType;
 import com.rar.unimatch.model.outbox.SendEmailPayload;
+import com.rar.unimatch.model.skill.Skill;
 import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.OutboxEventsRepository;
+import com.rar.unimatch.repository.SkillRepository;
 import com.rar.unimatch.repository.UserRepository;
 import com.rar.unimatch.utils.PayloadSerializer;
 
@@ -26,21 +29,22 @@ public class OutboxService {
     private final PayloadSerializer payloadSerializer;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final MeilisearchService meilisearchService;
+    private final SkillRepository skillRepository;
 
     public void publishSaveSendEmailTask(SendEmailPayload payload) {
-        var outboxEvent = OutboxEvent.builder()
-            .eventType(OutboxEventType.REGISTRATION_EMAIL)
-            .payload(payloadSerializer.toJson(payload))
-            .done(false)
-            .build();
-        publishEvent(outboxEvent);
+        publishTask(OutboxEventType.REGISTRATION_EMAIL, payloadSerializer.toJson(payload));
+    }
+
+    public void publishIndexSkillTask(IndexSkillPayload payload) {
+        publishTask(OutboxEventType.INDEX_SKILL, payloadSerializer.toJson(payload));
     }
 
     public void executeTasks(long limit) throws Exception {
         List<OutboxEvent> events = outboxRepository.findBatchToProcess(limit);
 
         for (OutboxEvent event : events) {
-            processEvent(event);
+            processTask(event);
         }
 
         if (events.size() > 0) {
@@ -48,31 +52,40 @@ public class OutboxService {
         }
     }
 
-    private void publishEvent(OutboxEvent outboxEvent) {
-        outboxRepository.save(outboxEvent);
+    private void publishTask(OutboxEventType type, String payload) {
+        var task = OutboxEvent.builder()
+            .eventType(OutboxEventType.INDEX_SKILL)
+            .payload(payload)
+            .done(false)
+            .build();
+        outboxRepository.save(task);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void processEvent(OutboxEvent event) throws Exception {
+    private void processTask(OutboxEvent task) throws Exception {
         try {
-            detectTypeAndHandle(event);
-            event.setDone(true);
+            detectTypeAndHandle(task);
+            task.setDone(true);
         } catch (ResourceNotFoundException e) {
-            event.setDone(true);
+            task.setDone(true);
             log.warn("No need to retry error in outbox: ", e);
         } catch (Exception e) {
-            event.setAttempts(event.getAttempts() + 1);
+            task.setAttempts(task.getAttempts() + 1);
             log.warn("Need to retry error in outbox: ", e);
             throw e;
         }
 
-        outboxRepository.save(event);
+        outboxRepository.save(task);
     }
 
-    private void detectTypeAndHandle(OutboxEvent event) throws Exception {
-        switch (event.getEventType()) {
+    private void detectTypeAndHandle(OutboxEvent task) throws Exception {
+        switch (task.getEventType()) {
             case OutboxEventType.REGISTRATION_EMAIL:
-                handleEmail(event);
+                handleEmail(task);
+                break;
+
+            case OutboxEventType.INDEX_SKILL:
+                handleSkill(task);
                 break;
 
             default:
@@ -89,5 +102,16 @@ public class OutboxService {
                 "User not found: " + payload.userId()));
 
         emailService.sendVerificationEmail(user, payload.token());
+    }
+
+    private void handleSkill(OutboxEvent event) {
+        IndexSkillPayload payload = payloadSerializer.fromJson(
+            event.getPayload(), IndexSkillPayload.class);
+
+        Skill skill = skillRepository.findById(payload.skillId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Skill not found: " + payload.skillId()));
+        
+        meilisearchService.indexSkill(skill);
     }
 }

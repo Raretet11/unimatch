@@ -4,12 +4,10 @@ import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.Index;
 import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.model.Searchable;
-import com.rar.unimatch.error.ResourceNotFoundException;
 import com.rar.unimatch.model.DTO.SkillSearchResponse;
 import com.rar.unimatch.model.mapper.SkillMapper;
 import com.rar.unimatch.model.skill.Skill;
 import com.rar.unimatch.model.skill.SkillSearchDocument;
-import com.rar.unimatch.repository.SkillRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
@@ -26,7 +24,6 @@ import jakarta.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class MeilisearchService {
     private final Client meilisearchClient;
-    private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
     private final ObjectMapper objectMapper;
 
@@ -42,14 +39,11 @@ public class MeilisearchService {
         log.info("Meilisearch index initialized");
     }
 
-    public void indexSkill(Long skillId) {
-        Skill skill = skillRepository.findById(skillId)
-            .orElseThrow(() -> new ResourceNotFoundException("Skill not found: " + skillId));
-
+    public void indexSkill(Skill skill) {
         String jsonDocument = skillMapper.toJson(SkillSearchDocument.fromSkill(skill));
         skillsIndex.addDocuments(jsonDocument);
 
-        log.info("Indexed skill {}: {}", skillId, skill.getTitle());
+        log.info("Indexed skill {}: {}", skill.getId(), skill.getTitle());
     }
 
     public void deleteSkill(Long skillId) {
