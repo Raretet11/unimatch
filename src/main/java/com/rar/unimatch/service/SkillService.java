@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.meilisearch.sdk.exceptions.MeilisearchException;
 import com.rar.unimatch.error.BadRequestException;
 import com.rar.unimatch.model.DTO.SkillCreateRequest;
+import com.rar.unimatch.model.outbox.IndexSkillPayload;
 import com.rar.unimatch.model.skill.RewardType;
 import com.rar.unimatch.model.skill.SessionType;
 import com.rar.unimatch.model.skill.Skill;
@@ -16,7 +17,6 @@ import com.rar.unimatch.model.skill.StudyFormat;
 import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.SkillRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SkillService {
     private final SkillRepository repository;
-    private final MeilisearchService meilisearchService;
+    private final OutboxService outboxService;
 
-    @Transactional(rollbackOn = MeilisearchException.class)
+    @Transactional
     public Skill create(SkillCreateRequest request, User user) {
         Skill skill = Skill.builder()
             .user(user)
@@ -41,7 +41,7 @@ public class SkillService {
             .isActive(true)
             .build();
         Skill result = repository.save(skill);
-        meilisearchService.indexSkill(result.getId());
+        outboxService.publishIndexSkillTask(new IndexSkillPayload(result.getId()));
         return result;
     }
 
@@ -49,7 +49,7 @@ public class SkillService {
         return repository.findByUserId(user.getId());
     }
 
-    @Transactional(rollbackOn = MeilisearchException.class)
+    @Transactional
     public Skill patchSkillParams(Map<String, Object> updates, Long skillId) {
         Skill skill = repository.getReferenceById(skillId);
         updates.forEach((key, value) -> {
@@ -63,9 +63,8 @@ public class SkillService {
                 default -> throw new BadRequestException("Can't update field " + key);
             }
         });
-        log.info("Patch params {} for: {}", updates.toString(), skillId);
         Skill result = repository.save(skill);
-        meilisearchService.indexSkill(result.getId());
+        outboxService.publishIndexSkillTask(new IndexSkillPayload(result.getId()));
         return result;
     }
 }

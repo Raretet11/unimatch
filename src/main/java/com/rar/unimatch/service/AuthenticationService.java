@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rar.unimatch.model.DTO.JwtAuthenticationResponse;
 import com.rar.unimatch.model.DTO.SignInRequest;
 import com.rar.unimatch.model.DTO.SignUpRequest;
+import com.rar.unimatch.model.outbox.SendEmailPayload;
 import com.rar.unimatch.model.user.Role;
 import com.rar.unimatch.model.user.User;
 
@@ -23,8 +24,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final EmailService emailService;
     private final EmailVerificationTokenService tokenService;
+    private final OutboxService outbox;
 
     @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
@@ -36,8 +37,10 @@ public class AuthenticationService {
                 .build();
 
         userService.create(user);
-        var token = tokenService.createVerificationToken(user);
-        emailService.sendVerificationEmail(user, token.getToken());
+        var verificationToken = tokenService.createVerificationToken(user);
+
+        var payload = new SendEmailPayload(user.getId(), verificationToken.getToken());
+        outbox.publishSaveSendEmailTask(payload);
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);

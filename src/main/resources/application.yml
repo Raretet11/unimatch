@@ -40,6 +40,11 @@ spring:
           writetimeout: 5000
     default-encoding: UTF-8
 
+  task:
+    scheduling:
+      pool:
+        size: 5
+
 logging:
   level:
     root: INFO
@@ -105,9 +110,6 @@ resilience4j:
       minio:
         base-config: default
 
-      meilisearch:
-        base-config: default
-
   retry:
     instances:
       default:
@@ -151,3 +153,7 @@ minio:
 meilisearch:
   host: ${MEILISEARCH_HOST:http://meilisearch:7700}
   api-key: ${MEILI_API_KEY}
+
+outbox:
+  batch-size: 1000
+  poll-interval-ms: 1000
