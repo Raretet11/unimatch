@@ -15,6 +15,7 @@ import com.rar.unimatch.model.user.User;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
@@ -33,27 +34,21 @@ public class EmailService {
 
     private static final String VERIFY_EMAIL_API_PATH = "/api/v1/auth/verify-email?token=";
 
-    public void sendVerificationEmail(User user, String token) {
+    public void sendVerificationEmail(User user, String token) throws MessagingException {
         Context context = buildContext(user, token);
-
         String htmlContent = templateEngine.process("email/verification-email", context);
 
         MimeMessage message = mailSender.createMimeMessage();
 
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(fromEmail);
-            helper.setTo(user.getEmail());
-            helper.setSubject("Подтверждение email для UniMatch");
-            helper.setText(htmlContent, true);
+        helper.setFrom(fromEmail);
+        helper.setTo(user.getEmail());
+        helper.setSubject("Подтверждение email для UniMatch");
+        helper.setText(htmlContent, true);
 
-            mailSender.send(message);
-            log.info("Verification email sent to: {}", user.getEmail());
-        } catch (Exception e) {
-            log.error("Failed to send verification email to: {}", user.getEmail(), e);
-            throw new RuntimeException("Failed to send verification email", e);
-        }
+        mailSender.send(message);
+        log.info("Verification email sent to: {}", user.getEmail());
     }
 
     private Context buildContext(User user, String token) {

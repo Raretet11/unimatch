@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.meilisearch.sdk.exceptions.MeilisearchException;
 import com.rar.unimatch.error.BadRequestException;
@@ -16,7 +17,6 @@ import com.rar.unimatch.model.skill.StudyFormat;
 import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.repository.SkillRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ public class SkillService {
     private final SkillRepository repository;
     private final MeilisearchService meilisearchService;
 
-    @Transactional(rollbackOn = MeilisearchException.class)
+    @Transactional
     public Skill create(SkillCreateRequest request, User user) {
         Skill skill = Skill.builder()
             .user(user)
@@ -49,7 +49,7 @@ public class SkillService {
         return repository.findByUserId(user.getId());
     }
 
-    @Transactional(rollbackOn = MeilisearchException.class)
+    @Transactional
     public Skill patchSkillParams(Map<String, Object> updates, Long skillId) {
         Skill skill = repository.getReferenceById(skillId);
         updates.forEach((key, value) -> {

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PostConstruct;
 
@@ -33,15 +32,16 @@ public class MeilisearchService {
 
     private Index skillsIndex;
 
+    private final static String INDEX_NAME = "skills";
+
     @PostConstruct
     public void init() {
-        skillsIndex = meilisearchClient.index("skills");
+        skillsIndex = meilisearchClient.index(INDEX_NAME);
         String[] searchableAttributes = {"title", "description"};
         skillsIndex.updateSearchableAttributesSettings(searchableAttributes);
         log.info("Meilisearch index initialized");
     }
 
-    @Transactional
     public void indexSkill(Long skillId) {
         Skill skill = skillRepository.findById(skillId)
             .orElseThrow(() -> new ResourceNotFoundException("Skill not found: " + skillId));
@@ -52,14 +52,13 @@ public class MeilisearchService {
         log.info("Indexed skill {}: {}", skillId, skill.getTitle());
     }
 
-    @Transactional
     public void deleteSkill(Long skillId) {
         skillsIndex.deleteDocument(String.valueOf(skillId));
         log.info("Deleted skill {} from Meilisearch", skillId);
     }
 
     public SkillSearchResponse searchSkills(String query, int limit, int offset) {
-        Index index = meilisearchClient.index("skills");
+        Index index = meilisearchClient.index(INDEX_NAME);
 
         SearchRequest searchRequest = SearchRequest.builder()
             .q(query)
@@ -69,8 +68,8 @@ public class MeilisearchService {
 
         Searchable result = index.search(searchRequest);
 
-        List<SkillSearchDocument> skills = result.getHits().stream()
-            .<SkillSearchDocument>map(hit -> objectMapper.convertValue(hit, SkillSearchDocument.class))
+        List<Long> skills = result.getHits().stream()
+            .<Long>map(hit -> objectMapper.convertValue(hit, SkillSearchDocument.class).getId())
             .collect(Collectors.toList());
 
         return SkillSearchResponse.builder()

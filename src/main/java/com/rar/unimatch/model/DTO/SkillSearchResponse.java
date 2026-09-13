@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import com.rar.unimatch.model.skill.SkillSearchDocument;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SkillSearchResponse {
-    private List<SkillSearchDocument> skills;
+    private List<Long> skills;
     private Integer total;
     private String query;
     private Integer limit;

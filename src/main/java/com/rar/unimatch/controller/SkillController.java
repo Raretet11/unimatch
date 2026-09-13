@@ -145,7 +145,7 @@ public class SkillController {
         )
     )
     @GetMapping("/search")
-    @CircuitBreaker(name = "meilisearch")
+    @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public SkillSearchResponse searchSkills(
             @RequestParam String q,

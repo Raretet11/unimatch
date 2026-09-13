@@ -1,0 +1,9 @@
+CREATE TABLE outbox_events (
+    id BIGSERIAL PRIMARY KEY,
+    event_type VARCHAR(100) NOT NULL,
+    payload JSONB NOT NULL,
+    done BOOLEAN NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

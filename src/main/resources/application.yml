@@ -105,9 +105,6 @@ resilience4j:
       minio:
         base-config: default
 
-      meilisearch:
-        base-config: default
-
   retry:
     instances:
       default:
@@ -151,3 +148,7 @@ minio:
 meilisearch:
   host: ${MEILISEARCH_HOST:http://meilisearch:7700}
   api-key: ${MEILI_API_KEY}
+
+outbox:
+  batch-size: 1000
+  poll-interval-ms: 1000
