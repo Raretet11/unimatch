@@ -40,8 +40,8 @@ public class OutboxService {
         publishTask(OutboxEventType.INDEX_SKILL, payloadSerializer.toJson(payload));
     }
 
-    public void executeTasks(long limit) throws Exception {
-        List<OutboxEvent> events = outboxRepository.findBatchToProcess(limit);
+    public void executeTasks(long limit, List<OutboxEventType> type) throws Exception {
+        List<OutboxEvent> events = outboxRepository.findBatchToProcess(type.stream().map(Enum::name).toList(), limit);
 
         for (OutboxEvent event : events) {
             processTask(event);

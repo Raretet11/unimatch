@@ -40,6 +40,11 @@ spring:
           writetimeout: 5000
     default-encoding: UTF-8
 
+  task:
+    scheduling:
+      pool:
+        size: 5
+
 logging:
   level:
     root: INFO

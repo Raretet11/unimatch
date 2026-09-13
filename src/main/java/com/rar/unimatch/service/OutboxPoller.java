@@ -1,8 +1,12 @@
 package com.rar.unimatch.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.rar.unimatch.model.outbox.OutboxEventType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +21,20 @@ public class OutboxPoller {
     private Long batchSize;
 
     @Scheduled(fixedDelayString = "${outbox.poll-interval-ms}")
-    public void poll() {
+    public void pollEmail() {
+        poll(List.of(OutboxEventType.REGISTRATION_EMAIL), "Email");
+    }
+
+    @Scheduled(fixedDelayString = "${outbox.poll-interval-ms}")
+    public void pollMeilisearch() {
+        poll(List.of(OutboxEventType.INDEX_SKILL), "Meilisearch");
+    }
+
+    public void poll(List<OutboxEventType> types, String label) {
         try {
-            outboxService.executeTasks(batchSize);
+            outboxService.executeTasks(batchSize, types);
         } catch (Exception e) {
-            log.warn("Exception while execute outbox tasks", e);
+            log.error("Outbox poller {} failed", label, e);
         }
     }
 }

@@ -12,8 +12,11 @@ public interface OutboxEventsRepository extends JpaRepository<OutboxEvent, Long>
     @Query(value = """
         SELECT * FROM outbox_events
         WHERE done = false
+        AND event_type IN (:types)
         ORDER BY created_at
         LIMIT :limit
         """, nativeQuery = true)
-    List<OutboxEvent> findBatchToProcess(@Param("limit") long limit);
+    List<OutboxEvent> findBatchToProcess(
+        @Param("types") List<String> types,
+        @Param("limit") long limit);
 }
