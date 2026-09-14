@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rar.unimatch.model.DTO.PatchRequest;
 import com.rar.unimatch.model.DTO.SkillCreateRequest;
 import com.rar.unimatch.model.DTO.SkillPublicResponse;
+import com.rar.unimatch.model.DTO.SkillSearchRequest;
 import com.rar.unimatch.model.DTO.SkillSearchResponse;
 import com.rar.unimatch.model.DTO.TagAddRequest;
 import com.rar.unimatch.model.mapper.SkillMapper;
@@ -136,7 +136,7 @@ public class SkillController {
         return skillTagMapService.getTagsIdBySkillId(id);
     }
 
-    @Operation(summary = "Поиск скиллов по тексту")
+    @Operation(summary = "Поиск скиллов по тексту и фильтрам")
     @ApiResponse(
         responseCode = "200",
         content = @Content(
@@ -147,11 +147,7 @@ public class SkillController {
     @GetMapping("/search")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
-    public SkillSearchResponse searchSkills(
-            @RequestParam String q,
-            @RequestParam(defaultValue = "10") Integer limit,
-            @RequestParam(defaultValue = "0") Integer offset
-    ) {
-        return meilisearchService.searchSkills(q, limit, offset);
+    public SkillSearchResponse searchSkills(@RequestBody SkillSearchRequest request) {
+        return meilisearchService.searchSkills(request);
     }
 }

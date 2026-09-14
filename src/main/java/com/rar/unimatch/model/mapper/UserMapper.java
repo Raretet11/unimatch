@@ -21,7 +21,7 @@ public class UserMapper {
             user.getFirstname(),
             user.getSurname(),
             user.getPatronymic(),
-            user.getSex(),
+            user.getGender(),
             user.getCourse(),
             user.getDegree(),
             user.getStudyProgram(),

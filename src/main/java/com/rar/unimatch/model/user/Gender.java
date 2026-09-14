@@ -1,6 +1,6 @@
 package com.rar.unimatch.model.user;
 
-public enum Sex {
+public enum Gender {
     MALE,
     FEMALE
 }

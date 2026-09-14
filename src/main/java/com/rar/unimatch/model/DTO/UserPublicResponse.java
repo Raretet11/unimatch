@@ -3,7 +3,7 @@ package com.rar.unimatch.model.DTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.rar.unimatch.model.user.Degree;
-import com.rar.unimatch.model.user.Sex;
+import com.rar.unimatch.model.user.Gender;
 
 @Schema(description = "Публичная информация о пользователе")
 public record UserPublicResponse(
@@ -23,7 +23,7 @@ public record UserPublicResponse(
     String patronymic,
 
     @Schema(description = "Пол", example = "MALE")
-    Sex sex,
+    Gender gender,
 
     @Schema(description = "Курс", example = "3")
     Integer course,

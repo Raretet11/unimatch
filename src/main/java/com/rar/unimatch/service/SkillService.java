@@ -60,6 +60,7 @@ public class SkillService {
                 case "sessionType" -> skill.setSessionType(SessionType.valueOf((String) value));
                 case "rewardType" -> skill.setRewardType(RewardType.valueOf((String) value));
                 case "rewardAmountRub" -> skill.setRewardAmountRub((BigDecimal) value);
+                case "isActive" -> skill.setActive((boolean) value);
                 default -> throw new BadRequestException("Can't update field " + key);
             }
         });

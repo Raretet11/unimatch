@@ -44,11 +44,12 @@ public class User implements UserDetails {
     private String patronymic;
 
     @Enumerated(EnumType.STRING)
-    private Sex sex;
+    private Gender gender;
 
     private Integer course;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private Degree degree;
     private String studyProgram;
     private String campus;

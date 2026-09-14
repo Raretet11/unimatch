@@ -11,7 +11,7 @@ import com.rar.unimatch.error.BadRequestException;
 import com.rar.unimatch.error.ResourceNotFoundException;
 import com.rar.unimatch.model.DTO.UserLinkCreateRequest;
 import com.rar.unimatch.model.user.Degree;
-import com.rar.unimatch.model.user.Sex;
+import com.rar.unimatch.model.user.Gender;
 import com.rar.unimatch.model.user.User;
 import com.rar.unimatch.model.user.UserLink;
 import com.rar.unimatch.repository.UserLinkRepository;
@@ -67,7 +67,7 @@ public class UserService {
                 case "firstname" -> user.setFirstname((String) value);
                 case "surname" -> user.setSurname((String) value);
                 case "patronymic" -> user.setPatronymic((String) value);
-                case "sex" -> user.setSex(Sex.valueOf((String) value));
+                case "gender" -> user.setGender(Gender.valueOf((String) value));
                 case "course" -> user.setCourse((Integer) value);
                 case "degree" -> user.setDegree(Degree.valueOf((String) value));
                 case "studyProgram" -> user.setStudyProgram((String) value);
