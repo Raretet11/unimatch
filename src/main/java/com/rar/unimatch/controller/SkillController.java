@@ -58,6 +58,7 @@ public class SkillController {
         )
     )
     @PostMapping
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public SkillPublicResponse createSkill(@RequestBody SkillCreateRequest request) {
@@ -76,6 +77,7 @@ public class SkillController {
         )
     )
     @GetMapping
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public List<SkillPublicResponse> getSkillsByUser() {
@@ -96,6 +98,7 @@ public class SkillController {
         )
     )
     @PatchMapping("/{id}")
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public SkillPublicResponse patchUserInfo(@RequestBody PatchRequest request, @PathVariable Long id) {
@@ -113,6 +116,7 @@ public class SkillController {
         )
     )
     @PostMapping("/{id}/tags")
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public List<SkillTag> addTags(@PathVariable Long id, @RequestBody TagAddRequest request) {
@@ -130,6 +134,7 @@ public class SkillController {
         )
     )
     @GetMapping("/{id}/tags")
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public List<Long> getTags(@PathVariable Long id) {
@@ -145,6 +150,7 @@ public class SkillController {
         )
     )
     @GetMapping("/search")
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public SkillSearchResponse searchSkills(@RequestBody SkillSearchRequest request) {

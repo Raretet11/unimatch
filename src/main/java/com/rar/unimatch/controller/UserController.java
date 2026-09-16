@@ -50,6 +50,7 @@ public class UserController {
         )
     )
     @GetMapping("/{id}")
+    @RateLimiter(name = "users")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public UserPublicResponse getUserById(@PathVariable Long id) {
@@ -67,6 +68,7 @@ public class UserController {
         )
     )
     @GetMapping("/me")
+    @RateLimiter(name = "users")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public UserPrivateResponse getUserInfoByToken() {
@@ -84,6 +86,7 @@ public class UserController {
         )
     )
     @PatchMapping("/me")
+    @RateLimiter(name = "users")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public UserPublicResponse patchUserInfo(@RequestBody PatchRequest request) {
@@ -101,6 +104,7 @@ public class UserController {
         )
     )
     @PostMapping("/links")
+    @RateLimiter(name = "users")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public UserLinkPublicResponse addUserLink(@RequestBody UserLinkCreateRequest request) {
@@ -118,6 +122,7 @@ public class UserController {
         )
     )
     @GetMapping("/{id}/links")
+    @RateLimiter(name = "users")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public List<UserLinkPublicResponse> getUserLinks(@PathVariable Long id) {

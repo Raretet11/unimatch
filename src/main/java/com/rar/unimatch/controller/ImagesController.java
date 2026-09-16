@@ -28,6 +28,7 @@ public class ImagesController {
 
     @Operation(summary = "Получение ссылки для прямой загрузки аватарки на сервер")
     @GetMapping("/profiles/url/upload")
+    @RateLimiter(name = "profile")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
     public UploadUrlResponse getUploadUrl(@Valid @RequestBody UploadProfilePictureUrlRequest request) throws MinioException {
@@ -36,6 +37,7 @@ public class ImagesController {
 
     @Operation(summary = "Проверка на наличие картинки")
     @GetMapping("/profiles/exists")
+    @RateLimiter(name = "profile")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
     public Map<String, Boolean> checkFileExists(@RequestParam String objectKey) throws MinioException {
@@ -45,6 +47,7 @@ public class ImagesController {
 
     @Operation(summary = "Получение ссылки для прямого скачивания картинки с сервера")
     @GetMapping("/profiles/url/download")
+    @RateLimiter(name = "profile")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
     public Map<String, String> getDownloadUrl(@RequestParam String key) throws MinioException {
@@ -57,6 +60,7 @@ public class ImagesController {
 
     @Operation(summary = "Удаление аватарки пользователем")
     @DeleteMapping("/profiles/me")
+    @RateLimiter(name = "profile")
     @CircuitBreaker(name = "minio")
     @Retry(name = "default")
     public void deleteFile() throws MinioException {

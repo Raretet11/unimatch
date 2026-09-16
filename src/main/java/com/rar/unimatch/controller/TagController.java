@@ -45,6 +45,7 @@ public class TagController {
         )
     )
     @PostMapping
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public TagPublicResponse createTag(@RequestBody TagCreateRequest request) {
@@ -62,6 +63,7 @@ public class TagController {
         )
     )
     @GetMapping("/search")
+    @RateLimiter(name = "skills")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public List<TagPublicResponse> findSimilarTag(@RequestBody TagFindSimilarRequest request) {

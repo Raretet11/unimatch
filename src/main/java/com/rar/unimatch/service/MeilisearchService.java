@@ -101,8 +101,6 @@ public class MeilisearchService {
             builder.sort(new String[]{filter.sortBy() + ":" + order});
         }
 
-        log.info("Builder filters: " + filters);
-
         SearchRequest searchRequest = builder.build();
         Searchable result = index.search(searchRequest);
 

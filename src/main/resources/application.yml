@@ -87,6 +87,22 @@ resilience4j:
         base-config: default
         limit-for-period: 20
 
+      comments:
+        base-config: default
+        limit-for-period: 120
+
+      profile:
+        base-config: default
+        limit-for-period: 30
+
+      skills:
+        base-config: defaule
+        limit-for-period: 300
+
+      users:
+        base-config: defaule
+        limit-for-period: 120
+
   circuitbreaker:
     configs:
         default:

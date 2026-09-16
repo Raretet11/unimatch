@@ -20,6 +20,7 @@ import com.rar.unimatch.service.UserService;
 import com.rar.unimatch.utils.APIErrorResponses;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -50,6 +51,7 @@ public class CommentController {
         )
     )
     @PostMapping
+    @RateLimiter(name = "comments")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public CommentPublicResponse createComment(@RequestBody CommentCreateRequest request) {
@@ -58,6 +60,7 @@ public class CommentController {
 
     @Operation(summary = "Удалить только комментарий с подветкой")
     @DeleteMapping("/{id}")
+    @RateLimiter(name = "comments")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public void deleteComment(@PathVariable long id) {
@@ -73,6 +76,7 @@ public class CommentController {
         )
     )
     @GetMapping("/info/{id}")
+    @RateLimiter(name = "comments")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public RatingSummary getInfo(@PathVariable long id) {
@@ -88,6 +92,7 @@ public class CommentController {
         )
     )
     @GetMapping("/{id}")
+    @RateLimiter(name = "comments")
     @CircuitBreaker(name = "database")
     @Retry(name = "default")
     public List<CommentPublicResponse> getByUserId(@PathVariable long id) {

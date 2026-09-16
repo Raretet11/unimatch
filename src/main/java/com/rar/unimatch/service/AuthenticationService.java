@@ -64,7 +64,6 @@ public class AuthenticationService {
         User verifiedUser = tokenService.verifyToken(token);
         String jwt = jwtService.generateToken(verifiedUser);
 
-        log.info("Email verified for user: {}, with email: {}", verifiedUser.getUsername(), verifiedUser.getEmail());
         return new JwtAuthenticationResponse(jwt);
     }
 }
